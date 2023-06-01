@@ -18,6 +18,7 @@ typedef struct lorawan_filter {
     uint32_t mote_fcnt;
     /* For iteration on hash table */
     bool filter_enable;
+    bool white_list_empty;
     /*dev_ht for filter whilte list */
     struct cds_lfht     *dev_ht;
     int                  seqnum;

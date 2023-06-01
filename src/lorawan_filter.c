@@ -39,7 +39,7 @@ static int dev_addr_str2hex(short *pbDest, const char *pbSrc, int nLen)
     return 0;
 }
 
-static int dev_addr_hex2int(short *dev_array, int *addr_val)
+static int dev_addr_hex2int(short *dev_array, uint32_t *addr_val)
 {
     if (dev_array == NULL || addr_val == NULL) {
         MSG("ERROR, null poiter.\n");
@@ -113,9 +113,10 @@ int parse_filter_configuration(void)
     conf_array = json_object_get_array(conf_obj, "white_list");
     if (conf_array == NULL) {
         printf("INFO: dev White list is empty.\n");
+        lorawan_filter()->white_list_empty = true;
         return -1;
     }
-
+    lorawan_filter()->white_list_empty = false;
     /* Use time as seed for hash table hashing. */
     lorawan_filter()->seed = time(NULL);
     /*

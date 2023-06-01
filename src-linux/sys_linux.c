@@ -1119,6 +1119,17 @@ int sys_main (int argc, char** argv) {
     if( err != 0 )
         return err;
 
+    if (access(FILTER_CONF_PATH_DEFAULT, R_OK) == 0) {
+        MSG("INFO: found configuration file %s, parsing it\n", FILTER_CONF_PATH_DEFAULT);
+        int ret = parse_filter_configuration();
+        if (ret != 0) {
+            MSG("WARN: parse lorawan filter failed.\n");
+        }
+    } else {
+        MSG("ERROR: [main] failed to find any configuration file named %s\n",
+            FILTER_CONF_PATH_DEFAULT);
+    }
+
 #if defined(CFG_ral_master_slave)
     int slave_rdfd = -1, slave_wrfd = -1;
     if( opts->slaveMode ) {

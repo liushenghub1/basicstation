@@ -300,6 +300,10 @@ static void log_rawpkt(u1_t level, str_t msg, struct lgw_pkt_rx_s * pkt_rx) {
 /*匹配哈希表的dev mac 成功返回 0 失败返回 -1*/
 static int lorawan_filter_handler(void)
 {
+    // 空列表直接返回不过滤
+    if (lorawan_filter()->white_list_empty == true) {
+        return 0;
+    }
     int             value    = lorawan_filter()->mote_addr;
     dev_addr_htn_t *dev_node = NULL;
     unsigned long   hash     = jhash(&value, sizeof(value), lorawan_filter()->seed);

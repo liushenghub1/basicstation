@@ -26,13 +26,14 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "lorawan_filter.h"
 #include "lgw/loragw_hal.h"
 #if defined(CFG_lgw1)
 
 #if (!defined(CFG_ral_lgw) && !defined(CFG_ral_master_slave)) || (defined(CFG_ral_lgw) && defined(CFG_ral_master_slave))
 #error Exactly one of the two params must be set: CFG_ral_lgw CFG_ral_master_slave
 #endif
-#include "lorawan_filter.h"
+
 #include "s2conf.h"
 #include "tc.h"
 #include "timesync.h"

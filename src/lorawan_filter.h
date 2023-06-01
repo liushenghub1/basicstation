@@ -2,6 +2,7 @@
 #define _LORAWAN_FILTER_H_
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include <urcu/urcu-memb.h> /* RCU flavor */
 #include <urcu/rculfhash.h> /* RCU Lock-free hash table */

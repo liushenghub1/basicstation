@@ -26,12 +26,13 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "lgw/loragw_hal.h"
 #if defined(CFG_lgw1)
 
 #if (!defined(CFG_ral_lgw) && !defined(CFG_ral_master_slave)) || (defined(CFG_ral_lgw) && defined(CFG_ral_master_slave))
 #error Exactly one of the two params must be set: CFG_ral_lgw CFG_ral_master_slave
 #endif
-
+#include "lorawan_filter.h"
 #include "s2conf.h"
 #include "tc.h"
 #include "timesync.h"
@@ -40,7 +41,6 @@
 #include "ral.h"
 #include "lgw/loragw_reg.h"
 #include "lgw/loragw_hal.h"
-#include "lorawan_filter.h"
 #if defined(CFG_sx1302)
 #include "lgw/loragw_sx1302_timestamp.h"
 extern timestamp_counter_t counter_us; // from loragw_sx1302.c

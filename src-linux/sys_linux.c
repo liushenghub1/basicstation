@@ -37,10 +37,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
-#include <urcu/urcu-memb.h> /* RCU flavor */
-#include <urcu/rculfhash.h> /* RCU Lock-free hash table */
-#include <urcu/compiler.h>  /* For CAA_ARRAY_SIZE */
-#include "jhash.h"          /* Example hash function */
 #include "argp2.h"
 #include "s2conf.h"
 #include "kwcrc.h"

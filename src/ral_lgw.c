@@ -28,6 +28,11 @@
 
 #include "lorawan_filter.h"
 #include "lgw/loragw_hal.h"
+extern lorawan_filter_t *lorawan_filter(void);
+extern int match(struct cds_lfht_node *ht_node, const void *_key);
+extern int parse_filter_configuration(void);
+extern void delete_dev_ht_node(void);
+
 #if defined(CFG_lgw1)
 
 #if (!defined(CFG_ral_lgw) && !defined(CFG_ral_master_slave)) || (defined(CFG_ral_lgw) && defined(CFG_ral_master_slave))

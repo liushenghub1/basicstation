@@ -1,6 +1,17 @@
 #include "lorawan_filter.h"
 
-static lorawan_filter_t g_filter;
+static lorawan_filter_t g_filter = {
+    .dev_ht = NULL,
+    .filter_enable = false,
+    .filter_rssi = 0,
+    .filter_snr = 0,
+    .iter = { 0 },
+    .mote_addr = 0,
+    .mote_fcnt = 0,
+    .seed = 0,
+    .seqnum = 0,
+    .white_list_empty = true
+};
 
 lorawan_filter_t *lorawan_filter(void)
 {
@@ -95,6 +106,7 @@ int parse_filter_configuration(void)
     }
     if (lorawan_filter()->filter_enable == false) {
         printf("INFO: LoRaWAN filter is not enable.\n");
+        json_value_free(root_val);
         return -1;
     }
 
@@ -114,6 +126,7 @@ int parse_filter_configuration(void)
     if (conf_array == NULL) {
         printf("INFO: dev White list is empty.\n");
         lorawan_filter()->white_list_empty = true;
+        json_value_free(root_val);
         return -1;
     }
     lorawan_filter()->white_list_empty = false;
@@ -126,6 +139,7 @@ int parse_filter_configuration(void)
         1, 1, 0, CDS_LFHT_AUTO_RESIZE | CDS_LFHT_ACCOUNTING, &urcu_memb_flavor, NULL);
     if (!lorawan_filter()->dev_ht) {
         printf("ERROR:  allocating dev_ht\n");
+        json_value_free(root_val);
         return -1;
     }
 
@@ -161,6 +175,7 @@ int parse_filter_configuration(void)
     /* free JSON parsing data structure */
     json_value_free(root_val);
     return 0;
+
 }
 
 /*主动释放ht的节点内存*/

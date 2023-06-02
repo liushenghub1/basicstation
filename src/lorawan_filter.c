@@ -66,7 +66,7 @@ static int dev_addr_hex2int(short *dev_array, uint32_t *addr_val)
 int match(struct cds_lfht_node *ht_node, const void *_key)
 {
     dev_addr_htn_t *match_node = caa_container_of(ht_node, dev_addr_htn_t, node);
-    const int      *key        = _key;
+    const uint32_t *key        = _key;
     return (*key == match_node->value);
 }
 

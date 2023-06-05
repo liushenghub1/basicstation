@@ -147,6 +147,14 @@ int parse_filter_configuration(void)
         str = json_array_get_string(conf_array, i);
         // MSG("DEBUG: while list dev: %s \n", str);
         memset(value_array, 0, sizeof(value_array));
+        if (dev_addr_str2hex(value_array, str, strlen(str)) == -1) {
+            MSG("ERROR: dev_addr[%s]str2hex is failed.\n", str);
+            continue;
+        }
+        if (dev_addr_hex2int(value_array, &addr_value) == -1) {
+            MSG("ERROR: dev_addr[%s]hex2int is failed.\n", str);
+            continue;
+        }
         dev_node = (dev_addr_htn_t *)malloc(sizeof(dev_addr_htn_t));
         if (!dev_node) {
             json_value_free(root_val);
@@ -154,16 +162,6 @@ int parse_filter_configuration(void)
             return -1;
         }
         cds_lfht_node_init(&dev_node->node);
-        if (dev_addr_str2hex(value_array, str, strlen(str)) == -1) {
-            json_value_free(root_val);
-            MSG("ERROR: dev_addr_str2hex is failed.\n");
-            return -1;
-        }
-        if (dev_addr_hex2int(value_array, &addr_value) == -1) {
-            MSG("ERROR: dev_addr_hex2int is failed.\n");
-            json_value_free(root_val);
-            return -1;
-        }
         dev_node->value  = addr_value;
         dev_node->seqnum = seqnum++;
         hash             = jhash(&addr_value, sizeof(int), lorawan_filter()->seed);

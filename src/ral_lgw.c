@@ -300,6 +300,9 @@ static void log_rawpkt(u1_t level, str_t msg, struct lgw_pkt_rx_s * pkt_rx) {
 /*匹配哈希表的dev mac 成功返回 0 失败返回 -1*/
 static int lorawan_filter_handler(void)
 {
+    if (lorawan_filter()->filter_enable == false) {
+        return 0;
+    }
     // 空列表直接返回不过滤
     if (lorawan_filter()->white_list_empty == true) {
         return 0;

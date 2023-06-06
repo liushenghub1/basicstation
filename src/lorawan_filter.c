@@ -179,6 +179,9 @@ int parse_filter_configuration(void)
 /*主动释放ht的节点内存*/
 void delete_dev_ht_node(void)
 {
+    if (lorawan_filter()->filter_enable == false || lorawan_filter()->white_list_empty == true) {
+        return;
+    }
     int                   ret;
     struct cds_lfht_node *ht_node;
     dev_addr_htn_t       *dev_node;

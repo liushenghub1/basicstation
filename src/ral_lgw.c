@@ -315,7 +315,6 @@ static int lorawan_filter_handler(void)
     cds_lfht_for_each_entry_duplicate(
         lorawan_filter()->dev_ht, hash, match, &value, &(lorawan_filter()->iter), dev_node, node)
     {
-        // MSG("DEBUG: filter dev mac :%08X \n", dev_node->value);
         if (dev_node->value == value) {
             is_exist = true;
             break;
@@ -323,10 +322,9 @@ static int lorawan_filter_handler(void)
     }
     urcu_memb_read_unlock();
     if (is_exist) {
-        MSG("INFO: mac ok :%08X \n", value);
         return 0;
     }
-    MSG("INFO:mac not ok :%08X \n", value);
+    MSG("INFO: [up] Filter dev mac :%08X\n", value);
     return -1;
 }
 
@@ -346,7 +344,7 @@ static void get_remote_info_from_packet(struct lgw_pkt_rx_s *pkt_rx)
         lorawan_filter()->mote_addr = 0;
         lorawan_filter()->mote_fcnt = 0;
     }
-    // MSG("DEBUG: mote addr is %08X \n", lorawan_filter()->mote_addr);
+    MSG("DEBUG: mote addr is %08X \n", lorawan_filter()->mote_addr);
 }
 
 //ATTR_FASTCODE

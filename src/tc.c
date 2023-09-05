@@ -66,7 +66,7 @@ static void tc_muxs_connection (conn_t* _conn, int ev) {
         uj_encKV(&b, "station",  's', CFG_version);
         uj_encKV(&b, "firmware", 's', sys_version());
         uj_encKV(&b, "package",  's', sys_version());
-        // uj_encKV(&b, "os",       's', sys_osversion()); 
+        // uj_encKV(&b, "os",       's', sys_osversion());
         uj_encKV(&b, "model",    's', CFG_platform);
         uj_encKV(&b, "protocol", 'i', MUXS_PROTOCOL_VERSION);
         uj_encKV(&b, "features", 's', rt_features());
@@ -300,6 +300,13 @@ void tc_free (tc_t* tc) {
     rt_free(tc);
 }
 
+void tc_rx_led_light_on(void) {
+    system("echo '1' > /sys/class/leds/led_lora/brightness");
+}
+
+void tc_rx_led_light_off(void) {
+    system("echo '0' > /sys/class/leds/led_lora/brightness");
+}
 
 void tc_start (tc_t* tc) {
     assert(tc->tstate == TC_INI);
@@ -329,6 +336,12 @@ void tc_start (tc_t* tc) {
         LOG(MOD_TCE|ERROR, "TC connect failed - URI: %s", tcuri);
         goto errexit;
     }
+    // 连接上服务器
+    tc_rx_led_light_on();
+    if (atexit(tc_rx_led_light_off) < 0) {
+        LOG(MOD_TCE|ERROR, "TC failed to register led turn off function ");
+    }
+
     rt_setTimerCb(&tc->timeout, rt_seconds_ahead(TC_TIMEOUT), tc_timeout);
     tc->ws.evcb = (evcb_t)tc_info_request;
     tc->tstate = TC_INFOS_REQ_PEND;

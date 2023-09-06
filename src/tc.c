@@ -300,11 +300,11 @@ void tc_free (tc_t* tc) {
     rt_free(tc);
 }
 
-void tc_rx_led_light_on(void) {
+void lgw_rx_led_light_on(void) {
     system("echo '1' > /sys/class/leds/led_lora/brightness");
 }
 
-void tc_rx_led_light_off(void) {
+void lgw_rx_led_light_off(void) {
     system("echo '0' > /sys/class/leds/led_lora/brightness");
 }
 
@@ -337,8 +337,8 @@ void tc_start (tc_t* tc) {
         goto errexit;
     }
     // 连接上服务器
-    tc_rx_led_light_on();
-    if (atexit(tc_rx_led_light_off) < 0) {
+    lgw_rx_led_light_on();
+    if (atexit(lgw_rx_led_light_off) < 0) {
         LOG(MOD_TCE|ERROR, "TC failed to register led turn off function ");
     }
 

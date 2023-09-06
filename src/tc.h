@@ -74,4 +74,7 @@ void   tc_start (tc_t* tc);
 void   tc_ondone_default (tmr_t* timeout);
 void   tc_continue (tc_t* tc);
 
+void   lgw_rx_led_light_on(void);
+void   lgw_rx_led_light_off(void);
+
 #endif // _tc_h_

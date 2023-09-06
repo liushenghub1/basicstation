@@ -35,6 +35,7 @@
 #include "httpd.h"
 #include "tls.h"
 #include "kwcrc.h"
+#include "tc.h"
 
 str_t const SUFFIX2CT[] = {
     "txt",  "text/plain",
@@ -455,6 +456,7 @@ static void triggerWsClosedEv(tmr_t* tmr) {
 
 void ws_shutdown (ws_t* conn) {
     LOG(MOD_AIO|DEBUG, "[%d] WS connection shutdown...", conn->netctx.fd);
+    lgw_rx_led_light_off();
     mbedtls_net_free(&conn->netctx);
     rt_free(conn->rbuf);
     rt_free(conn->wbuf);
@@ -1224,7 +1226,7 @@ static void httpd_accept (aio_t* aio) {
         log_mbedError(MOD_AIO|ERROR, ret, "[%d->%d] Accept failed", conn->listen.netctx.fd, client_netctx.fd);
         return;
     }
-    
+
     if( conn->c.aio != NULL ) {
         LOG(MOD_AIO|WARNING, "[%d->%d] Dropping new connection - busy with [%d]!",
             conn->listen.netctx.fd, client_netctx.fd, conn->c.netctx.fd);

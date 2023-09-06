@@ -456,7 +456,7 @@ static void triggerWsClosedEv(tmr_t* tmr) {
 
 void ws_shutdown (ws_t* conn) {
     LOG(MOD_AIO|DEBUG, "[%d] WS connection shutdown...", conn->netctx.fd);
-    lgw_rx_led_light_off();
+    bs_rx_led_light_off();
     mbedtls_net_free(&conn->netctx);
     rt_free(conn->rbuf);
     rt_free(conn->wbuf);

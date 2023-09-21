@@ -541,9 +541,13 @@ int sys_runRadioInit (str_t device) {
         snprintf(buf, sizeof(buf), "%d", sys_slaveIdx);
         argv[2] = buf;
     }
-    return sys_execCommand(RADIO_INIT_WAIT, argv) == 0;
+    // return sys_execCommand(RADIO_INIT_WAIT, argv) == 0;
+    int status = system("sh /usr/bin/rinit.sh");
+    if (WIFEXITED(status)) {
+        return 1;
+    }
+    return 0;
 }
-
 
 int sys_execCommand (ustime_t max_wait, str_t* argv) {
     int argc = 0;

@@ -297,40 +297,47 @@ static void log_rawpkt(u1_t level, str_t msg, struct lgw_pkt_rx_s * pkt_rx) {
     );
 }
 
-/*匹配哈希表的dev mac 成功返回 0 失败返回 -1*/
-static int lorawan_filter_handler(void)
+enum filterResut {
+    FILTER_PASS,
+    FILTER_INTERCEPT,
+};
+
+/*匹配哈希表的dev mac 成功/列表为空返回 0 失败返回 1*/
+static int lorawan_deveui_filter(const char *dev_eui, size_t length)
 {
-    if (lorawan_filter()->filter_enable == false) {
-        return 0;
+    if (lorawan_filter()->filter_enable == false || length != MAX_DEV_EUI) {
+        return FILTER_PASS;
     }
-    // 空列表直接返回不过滤
     if (lorawan_filter()->white_list_empty == true) {
-        return 0;
+        MSG("INFO: empty while list, no mac filter.");
+        return FILTER_PASS;
     }
-    int             value    = lorawan_filter()->mote_addr;
     dev_addr_htn_t *dev_node = NULL;
-    unsigned long   hash     = jhash(&value, sizeof(value), lorawan_filter()->seed);
+    unsigned long   hash     = jhash(dev_eui, length, lorawan_filter()->seed);
     bool            is_exist = false;
     urcu_memb_read_lock();
-    cds_lfht_for_each_entry_duplicate(
-        lorawan_filter()->dev_ht, hash, match, &value, &(lorawan_filter()->iter), dev_node, node)
+    cds_lfht_for_each_entry_duplicate(lorawan_filter()->dev_ht, hash, match, dev_eui, &lorawan_filter()->iter, dev_node, node)
     {
-        if (dev_node->value == value) {
+        if (strncmp(dev_node->dev_eui, dev_eui, MAX_DEV_EUI) == 0) {
             is_exist = true;
             break;
         }
     }
     urcu_memb_read_unlock();
     if (is_exist) {
-        return 0;
+        MSG("INFO: [up] Dev EUI:%s in whitelist, Send OTAA packet to NS.\n", dev_eui);
+        return FILTER_PASS;
     }
-    MSG("INFO: [up] Filter dev mac :%08X\n", value);
-    return -1;
+    MSG("INFO: [up] Dev EUI:%s not in whitelist, OTAA packet won't be sent to NS.\n", dev_eui);
+    return FILTER_INTERCEPT;
 }
 
 /* Get mote information from current packet (addr, fcnt) */
-static void get_remote_info_from_packet(struct lgw_pkt_rx_s *pkt_rx)
+static int get_remote_and_filter(struct lgw_pkt_rx_s *pkt_rx)
 {
+    uint8_t dev_eui[8];
+    uint8_t app_eui[8];
+    uint16_t dev_nonce;
     /* FHDR - DevAddr */
     if (pkt_rx->size >= 8) {
         lorawan_filter()->mote_addr = pkt_rx->payload[1];
@@ -345,6 +352,30 @@ static void get_remote_info_from_packet(struct lgw_pkt_rx_s *pkt_rx)
         lorawan_filter()->mote_fcnt = 0;
     }
     MSG("DEBUG: mote addr is %08X \n", lorawan_filter()->mote_addr);
+    if (pkt_rx->size >= 9) {
+        if (pkt_rx->payload[0] == 0x00) {
+            char dev_eui_str[MAX_DEV_EUI + 1] = { 0 };
+            dev_eui_str[MAX_DEV_EUI] = '\0';
+            memcpy(dev_eui, &pkt_rx->payload[1], 8);
+            MSG("INFO: Dev eui:");
+            for (size_t idx = 0; idx < 8 ; idx++) {
+                MSG("%02X", dev_eui[7 - idx]);
+                sprintf(&dev_eui_str[idx * 2], "%02X", dev_eui[7 - idx]);
+            }
+            MSG("\n");
+            MSG("INFO: App eui:");
+            memcpy(app_eui, &pkt_rx->payload[9], 8);
+            for (size_t idx = 0; idx < 8 ; idx++) {
+                MSG("%02X", app_eui[7 - idx]);
+            }
+            MSG("\n");
+            dev_nonce = (pkt_rx->payload[17] << 8) | pkt_rx->payload[18];
+            MSG("INFO: Dev Nonce: %d\n", dev_nonce);
+            MSG("\n");
+            return lorawan_deveui_filter(dev_eui_str, strlen(dev_eui_str));
+        }
+    }
+    return FILTER_PASS;
 }
 
 //ATTR_FASTCODE
@@ -360,8 +391,7 @@ static void rxpolling (tmr_t* tmr) {
         if( n==0 ) {
             break;
         }
-        get_remote_info_from_packet(&pkt_rx);
-        if (lorawan_filter_handler() != 0) {
+        if (get_remote_and_filter(&pkt_rx) != FILTER_PASS) {
             continue;
         }
         rxjob_t* rxjob = !TC ? NULL : s2e_nextRxjob(&TC->s2ctx);

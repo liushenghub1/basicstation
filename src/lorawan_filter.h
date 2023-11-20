@@ -10,6 +10,7 @@
 #include "jhash.h"          /* Example hash function */
 #include "parson.h"
 #define MAX_LORA_MAC 8
+#define MAX_DEV_EUI 16
 #define FILTER_CONF_PATH_DEFAULT "/etc/lorawan_filter/lorawan_filter.conf"
 #define MSG(args...) printf(args) /* message that is destined to the user */
 
@@ -29,8 +30,8 @@ typedef struct lorawan_filter {
 } lorawan_filter_t;
 
 typedef struct dev_addr_htn {
-    uint32_t             value;
-    uint32_t             seqnum; /* Our node sequence number */
+    char dev_eui[MAX_DEV_EUI + 1];
+    uint32_t seqnum; /* Our node sequence number */
     struct cds_lfht_node node;
 } dev_addr_htn_t;
 

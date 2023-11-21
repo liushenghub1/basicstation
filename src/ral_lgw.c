@@ -356,7 +356,7 @@ static int get_remote_and_filter(struct lgw_pkt_rx_s *pkt_rx)
         if (pkt_rx->payload[0] == 0x00) {
             char dev_eui_str[MAX_DEV_EUI + 1] = { 0 };
             dev_eui_str[MAX_DEV_EUI] = '\0';
-            memcpy(dev_eui, &pkt_rx->payload[1], 8);
+            memcpy(dev_eui, &pkt_rx->payload[9], 8);
             MSG("INFO: Dev eui:");
             for (size_t idx = 0; idx < 8 ; idx++) {
                 MSG("%02X", dev_eui[7 - idx]);
@@ -364,7 +364,7 @@ static int get_remote_and_filter(struct lgw_pkt_rx_s *pkt_rx)
             }
             MSG("\n");
             MSG("INFO: App eui:");
-            memcpy(app_eui, &pkt_rx->payload[9], 8);
+            memcpy(app_eui, &pkt_rx->payload[1], 8);
             for (size_t idx = 0; idx < 8 ; idx++) {
                 MSG("%02X", app_eui[7 - idx]);
             }

@@ -336,8 +336,8 @@ static int lorawan_deveui_filter(const char *dev_eui, size_t length)
 static int get_remote_and_filter(struct lgw_pkt_rx_s *pkt_rx)
 {
     uint8_t dev_eui[8];
-    uint8_t app_eui[8];
-    uint16_t dev_nonce;
+    // uint8_t app_eui[8];
+    // uint16_t dev_nonce;
     /* FHDR - DevAddr */
     if (pkt_rx->size >= 8) {
         lorawan_filter()->mote_addr = pkt_rx->payload[1];
@@ -356,8 +356,21 @@ static int get_remote_and_filter(struct lgw_pkt_rx_s *pkt_rx)
             char dev_eui_str[MAX_DEV_EUI + 1] = { 0 };
             dev_eui_str[MAX_DEV_EUI] = '\0';
             memcpy(dev_eui, &pkt_rx->payload[9], 8);
-            memcpy(app_eui, &pkt_rx->payload[1], 8);
-            dev_nonce = (pkt_rx->payload[17] << 8) | pkt_rx->payload[18];
+            for (size_t idx = 0; idx < 8 ; idx++) {
+                // MSG("%02X", dev_eui[7 - idx]);
+                sprintf(&dev_eui_str[idx * 2], "%02X", dev_eui[7 - idx]);
+            }
+            // MSG("\n");
+            // MSG("INFO: App eui:");
+            // memcpy(app_eui, &pkt_rx->payload[1], 8);
+            // for (size_t idx = 0; idx < 8 ; idx++) {
+            //     MSG("%02X", app_eui[7 - idx]);
+            // }
+            // MSG("\n");
+            // dev_nonce = (pkt_rx->payload[17] << 8) | pkt_rx->payload[18];
+            // MSG("INFO: Dev Nonce: %d\n", dev_nonce);
+            // MSG("\n");
+
             return lorawan_deveui_filter(dev_eui_str, strlen(dev_eui_str));
         }
     }

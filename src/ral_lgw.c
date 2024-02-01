@@ -351,7 +351,6 @@ static int get_remote_and_filter(struct lgw_pkt_rx_s *pkt_rx)
         lorawan_filter()->mote_addr = 0;
         lorawan_filter()->mote_fcnt = 0;
     }
-    MSG("DEBUG: mote addr is %08X \n", lorawan_filter()->mote_addr);
     if (pkt_rx->size >= 9) {
         if (pkt_rx->payload[0] == 0x00) {
             char dev_eui_str[MAX_DEV_EUI + 1] = { 0 };

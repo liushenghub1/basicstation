@@ -541,6 +541,7 @@ int sys_runRadioInit (str_t device) {
         snprintf(buf, sizeof(buf), "%d", sys_slaveIdx);
         argv[2] = buf;
     }
+    (void)argv;
     // return sys_execCommand(RADIO_INIT_WAIT, argv) == 0;
     int status = system("sh /usr/bin/rinit.sh");
     if (WIFEXITED(status)) {
@@ -1124,13 +1125,13 @@ int sys_main (int argc, char** argv) {
         return err;
 
     if (access(FILTER_CONF_PATH_DEFAULT, R_OK) == 0) {
-        MSG("INFO: found configuration file %s, parsing it\n", FILTER_CONF_PATH_DEFAULT);
+        LOG(MOD_SYS|INFO, "Found configuration file %s, parsing it\n", FILTER_CONF_PATH_DEFAULT);
         int ret = parse_filter_configuration();
         if (ret != 0) {
-            MSG("WARN: parse lorawan filter failed.\n");
+            LOG(MOD_SYS|WARNING, "Parse lorawan filter failed.\n");
         }
     } else {
-        MSG("ERROR: [main] failed to find any configuration file named %s\n",
+        LOG(MOD_SYS|WARNING, "Failed to find any configuration file named %s\n",
             FILTER_CONF_PATH_DEFAULT);
     }
 

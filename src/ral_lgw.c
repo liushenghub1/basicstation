@@ -309,7 +309,7 @@ static int lorawan_deveui_filter(const char *dev_eui, size_t length)
         return FILTER_PASS;
     }
     if (lorawan_filter()->white_list_empty == true) {
-        MSG("INFO: empty while list, no mac filter.");
+        // MSG("INFO: empty while list, no mac filter.");
         return FILTER_PASS;
     }
     dev_addr_htn_t *dev_node = NULL;
@@ -325,10 +325,10 @@ static int lorawan_deveui_filter(const char *dev_eui, size_t length)
     }
     urcu_memb_read_unlock();
     if (is_exist) {
-        MSG("INFO: [up] Dev EUI:%s in whitelist, Send OTAA packet to NS.\n", dev_eui);
+        LOG(MOD_RAL|INFO, "INFO: [up] Dev EUI:%s in whitelist, Send OTAA packet to NS.\n", dev_eui);
         return FILTER_PASS;
     }
-    MSG("INFO: [up] Dev EUI:%s not in whitelist, OTAA packet won't be sent to NS.\n", dev_eui);
+    LOG(MOD_RAL|INFO, "INFO: [up] Dev EUI:%s not in whitelist, OTAA packet won't be sent to NS.\n", dev_eui);
     return FILTER_INTERCEPT;
 }
 

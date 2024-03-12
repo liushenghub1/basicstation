@@ -35,7 +35,7 @@ int parse_filter_configuration(void)
     const char     *str;
     unsigned long   hash           = 0;
     short           value_array[4] = { 0 };
-    uint32_t        addr_value     = 0;
+    // uint32_t        addr_value     = 0;
     uint32_t        seqnum         = 0;
     /* try to parse JSON */
     root_val = json_parse_file_with_comments(FILTER_CONF_PATH_DEFAULT);
@@ -87,12 +87,12 @@ int parse_filter_configuration(void)
 
     for (int i = 0; i < (int)json_array_get_count(conf_array); ++i) {
         str = json_array_get_string(conf_array, i);
-        MSG("DEBUG: While list dev EUI: %s \n", str);
+        // MSG("DEBUG: While list dev EUI: %s \n", str);
         if (str != NULL && strlen(str) == MAX_DEV_EUI) {
             dev_node = (dev_addr_htn_t *)malloc(sizeof(dev_addr_htn_t));
             if (!dev_node) {
                 json_value_free(root_val);
-                MSG("ERROR: dev_node is null.\n");
+                // MSG("ERROR: dev_node is null.\n");
                 return -1;
             }
             cds_lfht_node_init(&dev_node->node);
@@ -106,7 +106,7 @@ int parse_filter_configuration(void)
             urcu_memb_read_unlock();
         }
     }
-    MSG("INFO: [%d] devices to filter.\n", dev_node->seqnum);
+    // MSG("INFO: [%d] devices to filter.\n", dev_node->seqnum);
     /* free JSON parsing data structure */
     json_value_free(root_val);
     return 0;

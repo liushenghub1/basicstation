@@ -18,6 +18,16 @@ lorawan_filter_t *lorawan_filter(void)
     return &g_filter;
 }
 
+void convert2upper(char *str)
+{
+    while (*str) {
+        if (isupper(*str)) {
+            *str = tolower(*str);
+        }
+        str++;
+    }
+}
+
 int match(struct cds_lfht_node *ht_node, const void *_key)
 {
     dev_addr_htn_t *match_node = caa_container_of(ht_node, dev_addr_htn_t, node);
@@ -34,7 +44,7 @@ int parse_filter_configuration(void)
     JSON_Value     *val        = NULL; /* needed to detect the absence of some fields */
     const char     *str;
     unsigned long   hash           = 0;
-    short           value_array[4] = { 0 };
+    // short           value_array[4] = { 0 };
     // uint32_t        addr_value     = 0;
     uint32_t        seqnum         = 0;
     /* try to parse JSON */
@@ -97,6 +107,7 @@ int parse_filter_configuration(void)
             }
             cds_lfht_node_init(&dev_node->node);
             strncpy(dev_node->dev_eui, str, MAX_DEV_EUI);
+            convert2upper(dev_node->dev_eui);
             dev_node->dev_eui[MAX_DEV_EUI] = '\0';
             ++seqnum;
             dev_node->seqnum = seqnum;

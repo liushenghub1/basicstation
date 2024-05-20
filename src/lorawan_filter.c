@@ -40,7 +40,7 @@ int parse_filter_configuration(void)
     /* try to parse JSON */
     root_val = json_parse_file_with_comments(FILTER_CONF_PATH_DEFAULT);
     if (root_val == NULL) {
-        printf("ERROR: %s is not a valid JSON file\n", FILTER_CONF_PATH_DEFAULT);
+        // printf("ERROR: %s is not a valid JSON file\n", FILTER_CONF_PATH_DEFAULT);
         return -1;
     }
 
@@ -50,23 +50,23 @@ int parse_filter_configuration(void)
         json_value_free(root_val);
         return -1;
     } else {
-        printf("INFO: %s does contain a JSON object , parsing debug parameters\n",
-               FILTER_CONF_PATH_DEFAULT);
+        // printf("INFO: %s does contain a JSON object , parsing debug parameters\n",
+        //        FILTER_CONF_PATH_DEFAULT);
     }
 
     val = json_object_get_value(conf_obj, "filter_enable");
     if (json_value_get_type(val) == JSONBoolean) {
         lorawan_filter()->filter_enable = (bool)json_value_get_boolean(val);
-        printf("INFO: lorawan filter enable :%d \n", lorawan_filter()->filter_enable);
+        // printf("INFO: lorawan filter enable :%d \n", lorawan_filter()->filter_enable);
     }
     if (lorawan_filter()->filter_enable == false) {
-        printf("INFO: LoRaWAN filter is not enable.\n");
+        // printf("INFO: LoRaWAN filter is not enable.\n");
         json_value_free(root_val);
         return -1;
     }
     conf_array = json_object_get_array(conf_obj, "white_list");
     if (conf_array == NULL) {
-        printf("INFO: dev White list is empty.\n");
+        // printf("INFO: dev White list is empty.\n");
         lorawan_filter()->white_list_empty = true;
         json_value_free(root_val);
         return -1;
@@ -80,7 +80,7 @@ int parse_filter_configuration(void)
     lorawan_filter()->dev_ht = cds_lfht_new_flavor(
         1, 1, 0, CDS_LFHT_AUTO_RESIZE | CDS_LFHT_ACCOUNTING, &urcu_memb_flavor, NULL);
     if (!lorawan_filter()->dev_ht) {
-        printf("ERROR:  allocating dev_ht\n");
+        // printf("ERROR:  allocating dev_ht\n");
         json_value_free(root_val);
         return -1;
     }
@@ -122,7 +122,7 @@ void delete_dev_ht_node(void)
     int                   ret;
     struct cds_lfht_node *ht_node;
     dev_addr_htn_t       *dev_node;
-    printf("removing keys (single key, not duplicates):\n");
+    // printf("removing keys (single key, not duplicates):\n");
     urcu_memb_read_lock();
 
     cds_lfht_for_each_entry(lorawan_filter()->dev_ht, &(lorawan_filter()->iter), dev_node, node)
